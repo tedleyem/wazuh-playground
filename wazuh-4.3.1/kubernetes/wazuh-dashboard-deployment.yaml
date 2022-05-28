@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose.yml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: wazuh-dashboard
+  name: wazuh-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: wazuh-dashboard
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose.yml
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: wazuh-dashboard
+    spec:
+      containers:
+      - env:
+        - name: INDEXER_PASSWORD
+          value: admin
+        - name: INDEXER_USERNAME
+          value: admin
+        - name: SERVER_SSL_ENABLED
+          value: "false"
+        - name: WAZUH_API_URL
+          value: https://wazuh.manager
+        image: wazuh/wazuh-dashboard:4.3.1
+        imagePullPolicy: ""
+        name: wazuh-dashboard
+        ports:
+        - containerPort: 443
+        resources: {}
+      hostname: wazuh.dashboard
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

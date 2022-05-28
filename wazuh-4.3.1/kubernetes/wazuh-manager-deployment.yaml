@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose.yml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: wazuh-manager
+  name: wazuh-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: wazuh-manager
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose.yml
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: wazuh-manager
+    spec:
+      containers:
+      - env:
+        - name: FILEBEAT_SSL_VERIFICATION_MODE
+          value: none
+        - name: INDEXER_PASSWORD
+          value: admin
+        - name: INDEXER_URL
+          value: https://wazuh.indexer:9200
+        - name: INDEXER_USERNAME
+          value: admin
+        image: wazuh/wazuh-manager:4.3.1
+        imagePullPolicy: ""
+        name: wazuh-manager
+        ports:
+        - containerPort: 1514
+        - containerPort: 1515
+        - containerPort: 514
+          protocol: UDP
+        - containerPort: 55000
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/ossec/api/configuration
+          name: wazuh-api-configuration
+        - mountPath: /var/ossec/etc
+          name: wazuh-etc
+        - mountPath: /var/ossec/logs
+          name: wazuh-logs
+        - mountPath: /var/ossec/queue
+          name: wazuh-queue
+        - mountPath: /var/ossec/var/multigroups
+          name: wazuh-var-multigroups
+        - mountPath: /var/ossec/integrations
+          name: wazuh-integrations
+        - mountPath: /var/ossec/active-response/bin
+          name: wazuh-active-response
+        - mountPath: /var/ossec/agentless
+          name: wazuh-agentless
+        - mountPath: /var/ossec/wodles
+          name: wazuh-wodles
+        - mountPath: /etc/filebeat
+          name: filebeat-etc
+        - mountPath: /var/lib/filebeat
+          name: filebeat-var
+      hostname: wazuh.manager
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: wazuh-api-configuration
+        persistentVolumeClaim:
+          claimName: wazuh-api-configuration
+      - name: wazuh-etc
+        persistentVolumeClaim:
+          claimName: wazuh-etc
+      - name: wazuh-logs
+        persistentVolumeClaim:
+          claimName: wazuh-logs
+      - name: wazuh-queue
+        persistentVolumeClaim:
+          claimName: wazuh-queue
+      - name: wazuh-var-multigroups
+        persistentVolumeClaim:
+          claimName: wazuh-var-multigroups
+      - name: wazuh-integrations
+        persistentVolumeClaim:
+          claimName: wazuh-integrations
+      - name: wazuh-active-response
+        persistentVolumeClaim:
+          claimName: wazuh-active-response
+      - name: wazuh-agentless
+        persistentVolumeClaim:
+          claimName: wazuh-agentless
+      - name: wazuh-wodles
+        persistentVolumeClaim:
+          claimName: wazuh-wodles
+      - name: filebeat-etc
+        persistentVolumeClaim:
+          claimName: filebeat-etc
+      - name: filebeat-var
+        persistentVolumeClaim:
+          claimName: filebeat-var
+status: {}
